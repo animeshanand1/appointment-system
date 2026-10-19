@@ -14,7 +14,11 @@ const MAX_RESPONSE_BYTES = 2_000_000;
 // Auth endpoints get a client-side ceiling as well, so a stuck key or a
 // double-click loop can't hammer the server. The real limit is enforced by
 // the API (it answers 429); this is only a courtesy throttle.
-const CLIENT_LIMITS = { "/auth/login": { max: 5, windowMs: 60_000 }, "/auth/register": { max: 3, windowMs: 60_000 } };
+const CLIENT_LIMITS = {
+  "/auth/login": { max: 5, windowMs: 60_000 },
+  "/auth/register": { max: 3, windowMs: 60_000 },
+  "/auth/forgot-password": { max: 3, windowMs: 60_000 },
+};
 const recentCalls = new Map();
 // After a 429 the endpoint is left alone until the server's Retry-After passes.
 const blockedUntil = new Map();
@@ -233,4 +237,119 @@ export async function createTimeOff({ startLocal, endLocal, reason, dryRun = fal
 
 export async function deleteTimeOff(timeOffId) {
   await request(`/doctors/me/time-off/${pathSegment(timeOffId)}`, { method: "DELETE" });
+}
+
+// ---------------------------------------------------------------------------
+// Rescheduling (docs/architecture/03-core-algorithms.md §3.3.1)
+// ---------------------------------------------------------------------------
+
+export async function cancelAppointment(appointmentId, reason) {
+  return updateAppointmentStatus(appointmentId, { status: "cancelled", reason });
+}
+
+// Doctor moves the appointment directly.
+export async function rescheduleAppointment(appointmentId, { startAt, reason }) {
+  const body = await request(`/appointments/${pathSegment(appointmentId)}/reschedule`, {
+    method: "PATCH",
+    json: { startAt, ...(reason ? { reason } : {}) },
+  });
+  return body.data;
+}
+
+// Patient asks the doctor to move it (replaces any pending request).
+export async function requestReschedule(appointmentId, { startAt, reason }) {
+  const body = await request(`/appointments/${pathSegment(appointmentId)}/reschedule-request`, {
+    method: "PUT",
+    json: { startAt, ...(reason ? { reason } : {}) },
+  });
+  return body.data;
+}
+
+export async function withdrawRescheduleRequest(appointmentId) {
+  const body = await request(`/appointments/${pathSegment(appointmentId)}/reschedule-request`, { method: "DELETE" });
+  return body.data;
+}
+
+export async function decideRescheduleRequest(appointmentId, { requestId, decision, note }) {
+  const body = await request(`/appointments/${pathSegment(appointmentId)}/reschedule-request/decision`, {
+    method: "POST",
+    json: { requestId, decision, ...(note ? { note } : {}) },
+  });
+  return body.data;
+}
+
+// ---------------------------------------------------------------------------
+// Account
+// ---------------------------------------------------------------------------
+
+export async function updateMe(changes) {
+  const body = await request("/auth/me", { method: "PATCH", json: changes });
+  return body.data.user;
+}
+
+export async function changePassword({ currentPassword, newPassword }) {
+  const body = await request("/auth/change-password", { method: "POST", json: { currentPassword, newPassword } });
+  return body.data.user;
+}
+
+export async function forgotPassword(email) {
+  const body = await request("/auth/forgot-password", { method: "POST", json: { email } });
+  return body.data.message;
+}
+
+export async function resetPassword({ token, password }) {
+  const body = await request("/auth/reset-password", { method: "POST", json: { token, password } });
+  return body.data.message;
+}
+
+// ---------------------------------------------------------------------------
+// Admin
+// ---------------------------------------------------------------------------
+
+const query = (params) => {
+  const search = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== "") search.set(key, String(value));
+  }
+  const text = search.toString();
+  return text ? `?${text}` : "";
+};
+
+export async function getAdminStats() {
+  const body = await request("/admin/stats");
+  return body.data;
+}
+
+export async function listAdminUsers({ role, status, q, page = 1, limit = 25 } = {}) {
+  const body = await request(`/admin/users${query({ role, status, q, page, limit })}`);
+  return { users: body.data, meta: body.meta };
+}
+
+export async function setUserActive(userId, isActive) {
+  const body = await request(`/admin/users/${pathSegment(userId)}`, { method: "PATCH", json: { isActive } });
+  return body.data;
+}
+
+export async function listInvites({ status, page = 1, limit = 25 } = {}) {
+  const body = await request(`/admin/invites${query({ status, page, limit })}`);
+  return { invites: body.data, meta: body.meta };
+}
+
+// The plain code is only ever returned here.
+export async function createInvite({ label, email, expiresInDays }) {
+  const body = await request("/admin/invites", {
+    method: "POST",
+    json: { label, ...(email ? { email } : {}), expiresInDays },
+  });
+  return { invite: body.data, code: body.meta.code };
+}
+
+export async function revokeInvite(inviteId) {
+  const body = await request(`/admin/invites/${pathSegment(inviteId)}`, { method: "DELETE" });
+  return body.data;
+}
+
+export async function listAdminAppointments({ status, doctorId, from, to, page = 1, limit = 25 } = {}) {
+  const body = await request(`/admin/appointments${query({ status, doctorId, from, to, page, limit })}`);
+  return { appointments: body.data, meta: body.meta };
 }

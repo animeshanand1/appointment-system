@@ -223,9 +223,6 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
             <span>Back to Sign In</span>
           </button>
 
-          <span className="signup-card__security-pill">
-            <ShieldCheck size={13} /> 256-Bit Vault
-          </span>
         </div>
 
         <div className="signup-card__brand-row">
@@ -235,7 +232,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
 
         <h2 className="signup-card__title">Create Patient Profile</h2>
         <p className="signup-card__subtitle">
-          Register to book hospital appointments, view clinical prescriptions, and manage medical records.
+          Register to book appointments, get email reminders, and move or cancel visits online.
         </p>
       </div>
 
@@ -520,8 +517,9 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
               className="signup-card__checkbox"
             />
             <span className="signup-card__checkbox-text">
-              I agree to the Dr Sahayak <a href="#terms" className="signup-card__link">Terms of Service</a> &{' '}
-              <a href="#privacy" className="signup-card__link">Patient Privacy Policy</a>.
+              I agree to the Dr Sahayak{' '}
+              <a href="/terms" target="_blank" rel="noopener noreferrer" className="signup-card__link">Terms of Use</a> &{' '}
+              <a href="/privacy" target="_blank" rel="noopener noreferrer" className="signup-card__link">Privacy Policy</a>.
             </span>
           </label>
         </div>

@@ -1,0 +1,148 @@
+/* ==========================================================================
+   Dr Sahayak - account settings and password recovery
+   ========================================================================== */
+
+.account-page {
+  max-width: 960px;
+}
+
+.recovery {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: clamp(32px, 8vw, 96px) 16px;
+  min-height: calc(100vh - 72px);
+  background:
+    radial-gradient(700px 360px at 90% 0%, var(--color-primary-50), transparent 70%),
+    var(--color-bg-page);
+}
+
+.recovery__card {
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 32px 28px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.recovery__back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.recovery__back:hover {
+  color: var(--color-text-main);
+}
+
+.recovery__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 8px;
+  border-radius: var(--radius-md);
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+}
+
+.recovery__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.recovery__subtitle {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+.recovery__form,
+.recovery__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.recovery__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.recovery__input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 1rem;
+  border: 1px solid var(--color-border-medium);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-main);
+}
+
+.recovery__input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.recovery__submit {
+  margin-top: 6px;
+  padding: 13px 18px;
+  font-weight: 700;
+  color: var(--color-text-inverse);
+  background: var(--color-primary-gradient, var(--color-primary-600));
+  border-radius: var(--radius-md);
+}
+
+.recovery__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.recovery__link {
+  align-self: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary-600);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.recovery__message {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  border-radius: var(--radius-md);
+}
+
+.recovery__message svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.recovery__message--ok {
+  color: var(--color-success-text);
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+}
+
+.recovery__message--error {
+  color: var(--color-danger-text);
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+}

@@ -7,7 +7,6 @@ import {
   EyeOff,
   User,
   Stethoscope,
-  ShieldCheck,
   PhoneCall,
   CheckCircle2,
   AlertCircle,
@@ -18,6 +17,7 @@ import './Login.css'
 import Signup from '../Signup/Signup'
 import { login, logout, ApiError } from '../../lib/api'
 import { LIMITS, isValidEmail, normalizeEmail } from '../../lib/sanitize'
+import { EMAIL } from '../Landing/landingData'
 
 // Seeded demo accounts for local development only. Vite replaces
 // import.meta.env.DEV with false in production builds, so these strings
@@ -47,7 +47,7 @@ function describeLoginError(err) {
   return err.message || 'Unable to sign in. Please try again.'
 }
 
-export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
+export default function Login({ onLoginSuccess, onForgotPassword, hideUtilityBar = false }) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [selectedRole, setSelectedRole] = useState('patient') 
   const [identifier, setIdentifier] = useState('')
@@ -138,7 +138,8 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
       // tab the person picked.
       const user = await login({ email, password })
 
-      if (user.role !== selectedRole) {
+      // Admins sign in from either tab and land on the admin workspace.
+      if (user.role !== selectedRole && user.role !== 'admin') {
         // Session cookie is already set for the real role; clear it so a
         // wrong-tab login doesn't leave them signed in under this tab.
         await logout().catch(() => {})
@@ -172,7 +173,7 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
           <div className="login-portal__utility-container">
             <div className="login-portal__utility-left">
               <span className="login-portal__utility-pulse"></span>
-              <span className="login-portal__utility-status">OPD & Telehealth Services Online</span>
+              <span className="login-portal__utility-status">Outpatient clinics Mon–Sat, 8 am – 8 pm</span>
             </div>
             <div className="login-portal__utility-right">
               <a href="tel:18004273785" className="login-portal__emergency-link">
@@ -197,36 +198,33 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
                 <HeartPulse className="login-portal__brand-icon" size={24} />
                 <span className="login-portal__brand-name">Dr Sahayak</span>
               </div>
-              <span className="login-portal__accreditation-pill">
-                <ShieldCheck size={14} /> JCI & NABH Accredited
-              </span>
             </div>
 
             <div className="login-portal__showcase-body">
               <div className="login-portal__hero-badge">
-                <Sparkles size={14} /> Smart Healthcare & Appointment System
+                <Sparkles size={14} /> Online appointment booking
               </div>
               <h1 className="login-portal__showcase-title">
                 Compassionate Care, Seamlessly Scheduled.
               </h1>
               <p className="login-portal__showcase-desc">
-                Connect with over 250+ top specialists, book same-day outpatient appointments,
-                access verified clinical laboratory reports, and manage follow-ups securely in one unified portal.
+                Book the consultant you want at a time that’s really free on their calendar, get an
+                email confirmation and a reminder the day before, and move or cancel online.
               </p>
 
-              {/* Live Hospital Stats */}
+              {/* Plain facts about the service */}
               <div className="login-portal__stats-grid">
                 <div className="login-portal__stat-item">
-                  <div className="login-portal__stat-value">99.4%</div>
-                  <div className="login-portal__stat-label">On-Time Appointments</div>
+                  <div className="login-portal__stat-value">6</div>
+                  <div className="login-portal__stat-label">Departments</div>
                 </div>
                 <div className="login-portal__stat-item">
-                  <div className="login-portal__stat-value">&lt; 15 min</div>
-                  <div className="login-portal__stat-label">Average OPD Wait</div>
+                  <div className="login-portal__stat-value">Mon–Sat</div>
+                  <div className="login-portal__stat-label">Outpatient clinics</div>
                 </div>
                 <div className="login-portal__stat-item">
-                  <div className="login-portal__stat-value">250+</div>
-                  <div className="login-portal__stat-label">Senior Consultants</div>
+                  <div className="login-portal__stat-value">24/7</div>
+                  <div className="login-portal__stat-label">Emergency unit</div>
                 </div>
               </div>
 
@@ -234,15 +232,15 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
               <ul className="login-portal__feature-list">
                 <li className="login-portal__feature-item">
                   <CheckCircle2 className="login-portal__feature-icon" size={18} />
-                  <span>Instant slot confirmation with SMS & WhatsApp reminders</span>
+                  <span>Email confirmation, plus a reminder the day before</span>
                 </li>
                 <li className="login-portal__feature-item">
                   <CheckCircle2 className="login-portal__feature-icon" size={18} />
-                  <span>Encrypted digital health records accessible 24/7</span>
+                  <span>Choose your doctor by name and see their real free times</span>
                 </li>
                 <li className="login-portal__feature-item">
                   <CheckCircle2 className="login-portal__feature-icon" size={18} />
-                  <span>Integrated electronic prescriptions and diagnostic booking</span>
+                  <span>Ask to reschedule or cancel from your account</span>
                 </li>
               </ul>
             </div>
@@ -372,9 +370,9 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
                     <label htmlFor="portal-password" className="login-portal__label">
                       Password
                     </label>
-                    <a href="#forgot" className="login-portal__forgot-link">
+                    <button type="button" className="login-portal__forgot-link" onClick={onForgotPassword}>
                       Forgot Password?
-                    </a>
+                    </button>
                   </div>
                   <div className="login-portal__input-wrapper">
                     <span className="login-portal__input-adornment">
@@ -464,11 +462,11 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
             © {new Date().getFullYear()} Dr Sahayak. All medical data is protected under patient confidentiality protocols.
           </p>
           <div className="login-portal__footer-links">
-            <a href="#privacy" className="login-portal__footer-link">Privacy Policy</a>
+            <a href="/privacy" className="login-portal__footer-link">Privacy Policy</a>
             <span className="login-portal__footer-sep">|</span>
-            <a href="#terms" className="login-portal__footer-link">Terms of Service</a>
+            <a href="/terms" className="login-portal__footer-link">Terms of Use</a>
             <span className="login-portal__footer-sep">|</span>
-            <a href="#support" className="login-portal__footer-link">Helpdesk & IT Support</a>
+            <a href={`mailto:${EMAIL}`} className="login-portal__footer-link">Help: {EMAIL}</a>
           </div>
         </div>
       </footer>

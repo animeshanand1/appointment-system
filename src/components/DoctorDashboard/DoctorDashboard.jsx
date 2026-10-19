@@ -129,7 +129,7 @@ export default function DoctorDashboard({ currentUser, onSessionRefresh, onViewA
         </div>
       )
     }
-    return <AgendaTab date={date} onDateChange={setAgendaDate} timezone={timezone} />
+    return <AgendaTab date={date} onDateChange={setAgendaDate} timezone={timezone} doctorId={user?.id} />
   }
 
   return (

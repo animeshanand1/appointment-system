@@ -89,9 +89,8 @@ export default function FooterSection({ onBook, onOpenAuth, onViewDepartment, on
         <div className="lp-footer__legal">
           <p>© {new Date().getFullYear()} Dr Sahayak</p>
           <nav aria-label="Legal">
-            <a href="#privacy">Privacy</a>
-            <a href="#terms">Terms</a>
-            <a href="#hipaa">HIPAA notice</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms of use</a>
           </nav>
         </div>
       </div>
