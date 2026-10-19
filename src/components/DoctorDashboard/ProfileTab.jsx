@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { AlertCircle, CheckCircle2 } from 'lucide-react'
 import { updateMyProfile } from '../../lib/api'
+import { LIMITS, cleanText } from '../../lib/sanitize'
 import { departmentName } from '../BookAppointment/bookingHelpers'
 import { describeSaveError, fieldErrors } from './doctorHelpers'
 
@@ -12,17 +13,38 @@ const toForm = (profile) => ({
   bio: profile.bio ?? '',
 })
 
+const splitQualifications = (text) =>
+  text
+    .split(',')
+    .map((q) => cleanText(q))
+    .filter(Boolean)
+
 // Empty text clears the field on the server.
 const toPayload = (form) => ({
   experienceYears: form.experienceYears === '' ? null : Number(form.experienceYears),
-  clinicName: form.clinicName.trim(),
-  clinicAddress: form.clinicAddress.trim(),
-  qualifications: form.qualifications
-    .split(',')
-    .map((q) => q.trim())
-    .filter(Boolean),
-  bio: form.bio.trim(),
+  clinicName: cleanText(form.clinicName, { maxLength: LIMITS.clinicName }),
+  clinicAddress: cleanText(form.clinicAddress, { maxLength: LIMITS.clinicAddress }),
+  qualifications: splitQualifications(form.qualifications),
+  bio: cleanText(form.bio, { maxLength: LIMITS.bio, multiline: true }),
 })
+
+// Mirrors the server's limits so mistakes show up before a round trip.
+function validate(form) {
+  const errors = {}
+  if (form.experienceYears !== '') {
+    const years = Number(form.experienceYears)
+    if (!Number.isInteger(years) || years < 0 || years > 70) {
+      errors.experienceYears = 'Enter a whole number of years between 0 and 70.'
+    }
+  }
+  const qualifications = splitQualifications(form.qualifications)
+  if (qualifications.length > LIMITS.qualifications) {
+    errors.qualifications = `List at most ${LIMITS.qualifications} qualifications.`
+  } else if (qualifications.some((q) => q.length > LIMITS.qualification)) {
+    errors.qualifications = `Each qualification must be at most ${LIMITS.qualification} characters.`
+  }
+  return errors
+}
 
 export default function ProfileTab({ user, onSaved }) {
   const profile = user.doctorProfile ?? {}
@@ -38,6 +60,12 @@ export default function ProfileTab({ user, onSaved }) {
   const save = async (e) => {
     e.preventDefault()
     if (saving) return
+    const problems = validate(form)
+    if (Object.keys(problems).length > 0) {
+      setErrors(problems)
+      setBanner({ type: 'error', message: 'Please fix the highlighted fields.' })
+      return
+    }
     setSaving(true)
     setBanner(null)
     setErrors({})
@@ -95,6 +123,7 @@ export default function ProfileTab({ user, onSaved }) {
             type="number"
             min={0}
             max={70}
+            step={1}
             className="doctor-dashboard__input"
             value={form.experienceYears}
             onChange={(e) => patch({ experienceYears: e.target.value })}
@@ -139,6 +168,7 @@ export default function ProfileTab({ user, onSaved }) {
           id="profile-qualifications"
           type="text"
           className="doctor-dashboard__input"
+          maxLength={(LIMITS.qualification + 2) * LIMITS.qualifications}
           placeholder="MBBS, MD (Cardiology)"
           value={form.qualifications}
           onChange={(e) => patch({ qualifications: e.target.value })}

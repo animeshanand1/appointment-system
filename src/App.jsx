@@ -5,11 +5,13 @@ import LandingPage from './components/Landing/LandingPage'
 import Login from './components/Login/Login'
 import CardiologyPage from './components/Departments/CardiologyPage'
 import BookAppointment from './components/BookAppointment/BookAppointment'
+import { isDepartmentId } from './components/BookAppointment/bookingHelpers'
 import AboutUs from './components/AboutUs/AboutUs'
 import DoctorDashboard from './components/DoctorDashboard/DoctorDashboard'
 import MyAppointments from './components/Appointments/MyAppointments'
 import DoctorProfile from './components/DoctorProfile/DoctorProfile'
 import { logout, me } from './lib/api'
+import { safeInternalPath } from './lib/sanitize'
 import { browserTimeZone } from './components/DoctorDashboard/doctorHelpers'
 import { ArrowLeft, ShieldCheck } from 'lucide-react'
 import './App.css'
@@ -23,11 +25,12 @@ function DoctorProfileRoute({ onBack, onBook }) {
 function BookAppointmentRoute(props) {
   const [searchParams] = useSearchParams()
   const location = useLocation()
+  const department = searchParams.get('department')
   // Keyed on the navigation so opening the form again starts it fresh.
   return (
     <BookAppointment
       key={location.key}
-      initialDepartment={searchParams.get('department') || ''}
+      initialDepartment={isDepartmentId(department) ? department : ''}
       {...props}
     />
   )
@@ -223,7 +226,7 @@ function App() {
           element={
             <DoctorProfileRoute
               onBack={() => {
-                navigate(location.state?.from ?? '/book')
+                navigate(safeInternalPath(location.state?.from, '/book'))
                 scrollTop()
               }}
               onBook={handleBookDoctor}

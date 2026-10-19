@@ -203,14 +203,20 @@ export function timeOffRange(form) {
 export function fieldErrors(err) {
   const errors = {}
   if (err instanceof ApiError && Array.isArray(err.details)) {
-    for (const { path, message } of err.details) if (path !== undefined && !(path in errors)) errors[path] = message
+    for (const detail of err.details) {
+      const path = detail?.path
+      // Server-supplied keys: plain strings only, and never prototype names.
+      if (typeof path !== 'string' || typeof detail.message !== 'string') continue
+      if (path === '__proto__' || Object.hasOwn(errors, path)) continue
+      errors[path] = detail.message
+    }
   }
   return errors
 }
 
 function commonMessage(err) {
   if (!(err instanceof ApiError)) return 'Something went wrong. Please try again.'
-  if (err.code === 'NETWORK_ERROR') return err.message
+  if (['NETWORK_ERROR', 'TIMEOUT', 'CLIENT_THROTTLED'].includes(err.code)) return err.message
   if (err.code === 'UNAUTHENTICATED') return 'Your session has expired. Please sign in again.'
   if (err.status === 429) return 'Too many requests. Please wait a moment and try again.'
   if (err.status >= 500) return 'The server is having trouble right now. Please try again shortly.'
