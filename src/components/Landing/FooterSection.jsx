@@ -9,7 +9,7 @@ export default function FooterSection({ onBook, onOpenAuth, onViewDepartment, on
           <div className="lp-footer__col">
             <div className="lp-footer__brand">
               <HeartPulse size={22} aria-hidden="true" />
-              <span>CarePulse Health</span>
+              <span>Dr Sahayak</span>
             </div>
             <p className="lp-footer__bio">
               A multi-specialty hospital and outpatient clinic in the Metro Medical District,
@@ -62,7 +62,7 @@ export default function FooterSection({ onBook, onOpenAuth, onViewDepartment, on
               {onOpenAbout && (
                 <li>
                   <button type="button" className="lp-footer__link" onClick={onOpenAbout}>
-                    About CarePulse
+                    About Dr Sahayak
                   </button>
                 </li>
               )}
@@ -83,11 +83,11 @@ export default function FooterSection({ onBook, onOpenAuth, onViewDepartment, on
         </div>
 
         <div className="lp-footer__word lp-display" aria-hidden="true">
-          CarePulse
+          Dr Sahayak
         </div>
 
         <div className="lp-footer__legal">
-          <p>© {new Date().getFullYear()} CarePulse Health Systems</p>
+          <p>© {new Date().getFullYear()} Dr Sahayak</p>
           <nav aria-label="Legal">
             <a href="#privacy">Privacy</a>
             <a href="#terms">Terms</a>

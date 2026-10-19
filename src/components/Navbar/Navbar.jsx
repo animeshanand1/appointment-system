@@ -74,9 +74,9 @@ export default function Navbar({
           </div>
           <div className="app-navbar__brand-copy">
             <span className="app-navbar__brand-name">
-              CarePulse<span className="app-navbar__brand-accent">.</span>
+              Dr Sahayak<span className="app-navbar__brand-accent">.</span>
             </span>
-            <span className="app-navbar__brand-sub">Health Systems</span>
+            <span className="app-navbar__brand-sub">Hospital & Clinic</span>
           </div>
         </div>
 
@@ -193,7 +193,7 @@ export default function Navbar({
             <div className="app-navbar__mobile-header">
               <div className="app-navbar__brand">
                 <HeartPulse className="app-navbar__logo-icon" size={20} />
-                <span className="app-navbar__brand-name">CarePulse Health</span>
+                <span className="app-navbar__brand-name">Dr Sahayak</span>
               </div>
               <button
                 type="button"

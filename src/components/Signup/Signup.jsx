@@ -60,7 +60,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
   // Doctor-specific fields (if registering as a hospital physician)
   const [inviteCode, setInviteCode] = useState('')
   const [specialization, setSpecialization] = useState('General Medicine')
-  const [clinicName, setClinicName] = useState('CarePulse Main OPD')
+  const [clinicName, setClinicName] = useState('Dr Sahayak Main OPD')
 
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -165,7 +165,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
       }
 
       const user = await register(payload)
-      setSuccessMessage(`Account created successfully! Welcome to CarePulse, ${user.fullName}.`)
+      setSuccessMessage(`Account created successfully! Welcome to Dr Sahayak, ${user.fullName}.`)
 
       if (onRegisterSuccess) {
         setTimeout(() => {
@@ -205,7 +205,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
 
         <div className="signup-card__brand-row">
           <HeartPulse className="signup-card__brand-icon" size={24} />
-          <span className="signup-card__brand-title">CarePulse Health Portal</span>
+          <span className="signup-card__brand-title">Dr Sahayak Portal</span>
         </div>
 
         <h2 className="signup-card__title">Create Patient Profile</h2>
@@ -480,7 +480,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
               className="signup-card__checkbox"
             />
             <span className="signup-card__checkbox-text">
-              I agree to the CarePulse <a href="#terms" className="signup-card__link">Terms of Service</a> &{' '}
+              I agree to the Dr Sahayak <a href="#terms" className="signup-card__link">Terms of Service</a> &{' '}
               <a href="#privacy" className="signup-card__link">Patient Privacy Policy</a>.
             </span>
           </label>
@@ -509,7 +509,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
       {/* Footer Switch Prompt to Flip to Login */}
       <div className="signup-card__footer">
         <p className="signup-card__footer-prompt">
-          Already registered with CarePulse?{' '}
+          Already registered with Dr Sahayak?{' '}
           <button
             type="button"
             className="signup-card__flip-link"

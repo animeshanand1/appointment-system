@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CarePulse — Landing Page
+   Dr Sahayak — Landing Page
    Editorial layout: warm paper, deep ink, one teal accent, Fraunces for
    display type. Tokens are scoped to .landing-page so no other view changes.
    ========================================================================== */
@@ -1210,7 +1210,7 @@
 .landing-page .lp-footer__word {
   margin: 0 0 20px -0.05em;
   /* sized so the word spans the container width */
-  font-size: clamp(3rem, 22vw, 20.5rem);
+  font-size: clamp(3rem, 19.5vw, 18.5rem);
   line-height: 0.78;
   letter-spacing: -0.055em;
   color: #1d3430;

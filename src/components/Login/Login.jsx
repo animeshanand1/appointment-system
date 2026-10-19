@@ -167,13 +167,13 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
         <div className="login-portal__container">
           
           {/* Visual Showcase Panel (Desktop/Tablet) */}
-          <section className="login-portal__showcase" aria-label="CarePulse Hospital Features">
+          <section className="login-portal__showcase" aria-label="Dr Sahayak Features">
             <div className="login-portal__showcase-glow"></div>
             
             <div className="login-portal__showcase-header">
               <div className="login-portal__brand-tag">
                 <HeartPulse className="login-portal__brand-icon" size={24} />
-                <span className="login-portal__brand-name">CarePulse Health</span>
+                <span className="login-portal__brand-name">Dr Sahayak</span>
               </div>
               <span className="login-portal__accreditation-pill">
                 <ShieldCheck size={14} /> JCI & NABH Accredited
@@ -241,7 +241,7 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
                     <div className="login-portal__card-header">
                 <div className="login-portal__card-brand-mobile">
                   <HeartPulse className="login-portal__brand-icon" size={26} />
-                  <span className="login-portal__brand-name">CarePulse Health</span>
+                  <span className="login-portal__brand-name">Dr Sahayak</span>
                 </div>
 
                 <div className="login-portal__card-badge">
@@ -397,7 +397,7 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
               {/* Patient Registration Callout - Triggers 3D Flip */}
               <div className="login-portal__register-prompt">
                 <p>
-                  Visiting CarePulse for the first time?{' '}
+                  Visiting Dr Sahayak for the first time?{' '}
                   <button
                     type="button"
                     className="login-portal__register-link"
@@ -432,7 +432,7 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
       <footer className="login-portal__footer">
         <div className="login-portal__footer-container">
           <p className="login-portal__copyright">
-            © {new Date().getFullYear()} CarePulse Health Systems & Hospitals. All medical data is protected under patient confidentiality protocols.
+            © {new Date().getFullYear()} Dr Sahayak. All medical data is protected under patient confidentiality protocols.
           </p>
           <div className="login-portal__footer-links">
             <a href="#privacy" className="login-portal__footer-link">Privacy Policy</a>
