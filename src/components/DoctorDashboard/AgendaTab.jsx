@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { listMyAppointments, updateAppointmentStatus } from '../../lib/api'
 import { formatClock, formatLongDate } from '../BookAppointment/bookingHelpers'
+import { telHref } from '../../lib/sanitize'
 import {
   ACTION_LABELS,
   ACTION_STATUS,
@@ -60,8 +61,8 @@ function AppointmentItem({ appointment, isNext, showDate, pending, error, onAct 
       <div className="doctor-dashboard__appt-body">
         <div className="doctor-dashboard__appt-patient">
           <span className="doctor-dashboard__appt-name">{patient?.fullName ?? 'Unknown patient'}</span>
-          {patient?.phone && (
-            <a className="doctor-dashboard__appt-phone" href={`tel:${patient.phone}`}>
+          {telHref(patient?.phone) && (
+            <a className="doctor-dashboard__appt-phone" href={telHref(patient.phone)}>
               <Phone size={13} aria-hidden="true" /> {patient.phone}
             </a>
           )}

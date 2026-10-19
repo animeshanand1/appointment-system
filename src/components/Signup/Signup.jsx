@@ -16,6 +16,7 @@ import {
   HeartPulse,
 } from 'lucide-react'
 import { register, ApiError } from '../../lib/api'
+import { LIMITS, cleanText, isValidEmail, isValidFullName, normalizeEmail, passwordProblem } from '../../lib/sanitize'
 import './Signup.css'
 
 function describeSignupError(err) {
@@ -28,7 +29,7 @@ function describeSignupError(err) {
   }
   if (err.code === 'VALIDATION_FAILED') {
     if (err.details?.some((d) => d.path === 'password')) {
-      return 'Password must be at least 8 characters long and not match your email.'
+      return 'Password must be 8–128 characters, include a letter and a number, and not match your email.'
     }
     if (err.details?.some((d) => d.path === 'email')) {
       return 'Please enter a valid email address.'
@@ -41,8 +42,9 @@ function describeSignupError(err) {
     }
     return err.details?.[0]?.message || 'Please verify the highlighted fields.'
   }
+  if (err.code === 'CLIENT_THROTTLED') return err.message
   if (err.status === 429) return 'Too many attempts. Please wait a minute and try again.'
-  if (err.code === 'NETWORK_ERROR') return err.message
+  if (err.code === 'NETWORK_ERROR' || err.code === 'TIMEOUT') return err.message
   if (err.status >= 500) return 'The hospital server is busy. Please try again in a moment.'
   return err.message || 'Registration failed. Please try again.'
 }
@@ -55,7 +57,8 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [agreeTerms, setAgreeTerms] = useState(true)
+  // Consent has to be an active choice, not a pre-ticked box.
+  const [agreeTerms, setAgreeTerms] = useState(false)
 
   // Doctor-specific fields (if registering as a hospital physician)
   const [inviteCode, setInviteCode] = useState('')
@@ -72,7 +75,10 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
     setSuccessMessage('')
   }
 
+  // Development builds only. There is deliberately no invite code here: a real
+  // one in client code would let anyone register as a doctor.
   const handleQuickDemoFill = (targetRole) => {
+    if (!import.meta.env.DEV) return
     setRole(targetRole)
     setErrorMessage('')
     setSuccessMessage('')
@@ -86,15 +92,14 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
       setSuccessMessage('Loaded Patient registration demo info')
     } else {
       const randNum = Math.floor(100 + Math.random() * 900)
-      setFullName('Dr. Emily Watson, MD')
+      setFullName('Emily Watson')
       setEmail(`dr.watson${randNum}@carepulse.org`)
       setPhone('9123456780')
       setPassword('Doctor@2026')
       setConfirmPassword('Doctor@2026')
       setSpecialization('Cardiology')
       setClinicName('Heart & Vascular Center')
-      setInviteCode('DOC-CARE-2026')
-      setSuccessMessage('Loaded Specialist demo info')
+      setSuccessMessage('Loaded Specialist demo info. Enter the invite code from administration.')
     }
     setTimeout(() => setSuccessMessage(''), 3000)
   }
@@ -104,37 +109,54 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
     setErrorMessage('')
     setSuccessMessage('')
 
-    // Client validation
-    if (!fullName.trim()) {
+    if (isLoading) return
+
+    // Client validation. The server validates again; this catches mistakes
+    // early and keeps what we send clean and bounded.
+    const cleanName = cleanText(fullName, { maxLength: LIMITS.fullName.max })
+    const cleanEmail = normalizeEmail(email)
+    const cleanPhone = phone.replace(/\D/g, '')
+    const cleanInvite = cleanText(inviteCode, { maxLength: LIMITS.inviteCode })
+    const cleanSpecialization = cleanText(specialization, { maxLength: LIMITS.specialization })
+    const cleanClinic = cleanText(clinicName, { maxLength: LIMITS.clinicName })
+
+    if (!cleanName) {
       setErrorMessage('Please enter your full legal name.')
       return
     }
-    if (!email.trim()) {
+    if (!isValidFullName(cleanName)) {
+      setErrorMessage(
+        `Full name must be ${LIMITS.fullName.min}–${LIMITS.fullName.max} characters and contain only letters, spaces, and . , ' -`
+      )
+      return
+    }
+    if (!isValidEmail(cleanEmail)) {
       setErrorMessage('Please enter a valid email address.')
       return
     }
-    if (!phone.trim()) {
+    if (!cleanPhone) {
       setErrorMessage('Please enter your primary contact phone number.')
       return
     }
-    if (!/^\d{1,10}$/.test(phone.trim())) {
-      setErrorMessage('Phone number must contain digits only, up to 10 digits.')
+    if (!/^\d{10}$/.test(cleanPhone)) {
+      setErrorMessage('Please enter a 10-digit phone number.')
       return
     }
-    if (!password) {
-      setErrorMessage('Please enter a secure password (min 8 characters).')
-      return
-    }
-    if (password.length < 8) {
-      setErrorMessage('Password must contain at least 8 characters.')
+    const weakPassword = passwordProblem(password, cleanEmail)
+    if (weakPassword) {
+      setErrorMessage(weakPassword)
       return
     }
     if (password !== confirmPassword) {
       setErrorMessage('Passwords do not match. Please re-enter.')
       return
     }
-    if (role === 'doctor' && !inviteCode.trim()) {
+    if (role === 'doctor' && !cleanInvite) {
       setErrorMessage('Doctor invite code is required to register clinical staff.')
+      return
+    }
+    if (role === 'doctor' && !cleanSpecialization) {
+      setErrorMessage('Please enter your specialization.')
       return
     }
     if (!agreeTerms) {
@@ -148,23 +170,26 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
 
       const payload = {
-        fullName: fullName.trim(),
-        email: email.trim().toLowerCase(),
-        phone: phone.trim(),
+        fullName: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
         password,
-        role,
+        role: role === 'doctor' ? 'doctor' : 'patient',
         timezone,
       }
 
       if (role === 'doctor') {
-        payload.inviteCode = inviteCode.trim()
+        payload.inviteCode = cleanInvite
         payload.doctorProfile = {
-          specialization: specialization.trim(),
-          clinicName: clinicName.trim(),
+          specialization: cleanSpecialization,
+          clinicName: cleanClinic,
         }
       }
 
       const user = await register(payload)
+      setPassword('')
+      setConfirmPassword('')
+      setInviteCode('')
       setSuccessMessage(`Account created successfully! Welcome to Dr Sahayak, ${user.fullName}.`)
 
       if (onRegisterSuccess) {
@@ -239,26 +264,28 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
         </button>
       </div>
 
-      {/* Quick Autofill Demo Helper */}
-      <div className="signup-card__demo-strip">
-        <span className="signup-card__demo-caption">Quick Demo Fill:</span>
-        <div className="signup-card__demo-actions">
-          <button
-            type="button"
-            className="signup-card__demo-pill"
-            onClick={() => handleQuickDemoFill('patient')}
-          >
-            Patient Data
-          </button>
-          <button
-            type="button"
-            className="signup-card__demo-pill"
-            onClick={() => handleQuickDemoFill('doctor')}
-          >
-            Doctor Data
-          </button>
+      {/* Quick Autofill Demo Helper (development builds only) */}
+      {import.meta.env.DEV && (
+        <div className="signup-card__demo-strip">
+          <span className="signup-card__demo-caption">Quick Demo Fill:</span>
+          <div className="signup-card__demo-actions">
+            <button
+              type="button"
+              className="signup-card__demo-pill"
+              onClick={() => handleQuickDemoFill('patient')}
+            >
+              Patient Data
+            </button>
+            <button
+              type="button"
+              className="signup-card__demo-pill"
+              onClick={() => handleQuickDemoFill('doctor')}
+            >
+              Doctor Data
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Alerts */}
       {errorMessage && (
@@ -291,6 +318,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
               id="reg-fullname"
               type="text"
               autoComplete="name"
+              maxLength={LIMITS.fullName.max}
               placeholder="e.g. Sarah Jenkins"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
@@ -314,7 +342,11 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
               <input
                 id="reg-email"
                 type="email"
+                inputMode="email"
+                autoCapitalize="none"
+                spellCheck={false}
                 autoComplete="email"
+                maxLength={LIMITS.email}
                 placeholder="name@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -364,6 +396,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
                   <input
                     id="reg-specialization"
                     type="text"
+                    maxLength={LIMITS.specialization}
                     placeholder="e.g. Cardiology"
                     value={specialization}
                     onChange={(e) => setSpecialization(e.target.value)}
@@ -384,6 +417,10 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
                   <input
                     id="reg-invite"
                     type="text"
+                    autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
+                    maxLength={LIMITS.inviteCode}
                     placeholder="DOC-••••-••••"
                     value={inviteCode}
                     onChange={(e) => setInviteCode(e.target.value)}
@@ -405,6 +442,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
                 <input
                   id="reg-clinic"
                   type="text"
+                  maxLength={LIMITS.clinicName}
                   placeholder="e.g. Department of Internal Medicine"
                   value={clinicName}
                   onChange={(e) => setClinicName(e.target.value)}
@@ -430,7 +468,8 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
                 id="reg-pass"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
-                placeholder="Min 8 characters"
+                maxLength={LIMITS.password.max}
+                placeholder="8+ characters, letters and numbers"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="signup-card__input"
@@ -460,6 +499,7 @@ export default function Signup({ onFlipToLogin, onRegisterSuccess }) {
                 id="reg-confirm-pass"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="new-password"
+                maxLength={LIMITS.password.max}
                 placeholder="Repeat password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}

@@ -15,6 +15,11 @@ export const REASON_MAX = 500
 
 export const FIELD_ORDER = ['department', 'doctorId', 'date', 'slot', 'reason', 'consent']
 
+// Only known department ids are accepted from the URL (?department=…).
+export function isDepartmentId(id) {
+  return DEPARTMENTS.some((d) => d.id === id)
+}
+
 export function departmentName(id) {
   return DEPARTMENTS.find((d) => d.id === id)?.name ?? id
 }
@@ -85,6 +90,8 @@ export function describeBookingError(err) {
       return { message: 'Some booking details were rejected. Please review the form and try again.' }
     }
     case 'NETWORK_ERROR':
+    case 'TIMEOUT':
+    case 'CLIENT_THROTTLED':
       return { message: err.message }
   }
 
@@ -94,7 +101,7 @@ export function describeBookingError(err) {
 }
 
 export function describeLoadError(err) {
-  if (err instanceof ApiError && err.code === 'NETWORK_ERROR') return err.message
+  if (err instanceof ApiError && ['NETWORK_ERROR', 'TIMEOUT', 'CLIENT_THROTTLED'].includes(err.code)) return err.message
   if (err instanceof ApiError && err.status === 429) return 'Too many requests. Please wait a moment and try again.'
   return 'Could not load this information. Please try again.'
 }

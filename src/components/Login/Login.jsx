@@ -17,6 +17,17 @@ import {
 import './Login.css'
 import Signup from '../Signup/Signup'
 import { login, logout, ApiError } from '../../lib/api'
+import { LIMITS, isValidEmail, normalizeEmail } from '../../lib/sanitize'
+
+// Seeded demo accounts for local development only. Vite replaces
+// import.meta.env.DEV with false in production builds, so these strings
+// are dropped from the shipped bundle and the form starts empty.
+const DEMO_CREDENTIALS = import.meta.env.DEV
+  ? {
+      patient: { email: 'sarah.jenkins@carepulse.org', password: 'patient@2026' },
+      doctor: { email: 'dr.chen@carepulse.org', password: 'doctor@2026' },
+    }
+  : null
 
 // Maps backend error codes (docs/architecture/04-api-specification.md §4.1) to
 // copy that fits this form. Falls back to the server's own message.
@@ -28,7 +39,9 @@ function describeLoginError(err) {
       ? 'Please enter a valid email address.'
       : 'Please check your details and try again.'
   }
+  if (err.code === 'CLIENT_THROTTLED') return err.message
   if (err.status === 429) return 'Too many login attempts. Please wait a minute and try again.'
+  if (err.code === 'TIMEOUT') return err.message
   if (err.code === 'NETWORK_ERROR') return err.message
   if (err.status >= 500) return 'The server is having trouble right now. Please try again shortly.'
   return err.message || 'Unable to sign in. Please try again.'
@@ -37,8 +50,8 @@ function describeLoginError(err) {
 export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
   const [isFlipped, setIsFlipped] = useState(false)
   const [selectedRole, setSelectedRole] = useState('patient') 
-  const [identifier, setIdentifier] = useState('sarah.jenkins@carepulse.org')
-  const [password, setPassword] = useState('patient@2026')
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
@@ -49,19 +62,15 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
     patient: {
       title: 'Patient Portal Login',
       subtitle: 'Schedule appointments, view diagnostics, and track treatments.',
-      identifierLabel: 'Email or Medical Record Number (MRN)',
-      identifierPlaceholder: 'e.g. sarah.jenkins@carepulse.org or MRN-88201',
-      demoEmail: 'sarah.jenkins@carepulse.org',
-      demoPass: 'patient@2026',
+      identifierLabel: 'Email Address',
+      identifierPlaceholder: 'e.g. name@example.com',
       badge: 'Patient Access',
     },
     doctor: {
       title: 'Specialist & Doctor Login',
       subtitle: 'Access clinical rounds, OPD queue, and medical consultations.',
-      identifierLabel: 'Hospital Physician ID or Email',
-      identifierPlaceholder: 'e.g. dr.chen@carepulse.org or DOC-4091',
-      demoEmail: 'dr.chen@carepulse.org',
-      demoPass: 'doctor@2026',
+      identifierLabel: 'Hospital Email',
+      identifierPlaceholder: 'e.g. name@example.com',
       badge: 'Clinical Staff',
     }
   }
@@ -70,8 +79,8 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
     setSelectedRole(role)
     setErrorMessage('')
     setSuccessMessage('')
-    setIdentifier(roleConfig[role].demoEmail)
-    setPassword(roleConfig[role].demoPass)
+    // Don't carry a typed password across to the other portal.
+    setPassword('')
   }
 
   const handleFlipToSignup = () => {
@@ -87,9 +96,10 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
   }
 
   const handleQuickDemoFill = (role) => {
+    if (!DEMO_CREDENTIALS) return
     setSelectedRole(role)
-    setIdentifier(roleConfig[role].demoEmail)
-    setPassword(roleConfig[role].demoPass)
+    setIdentifier(DEMO_CREDENTIALS[role].email)
+    setPassword(DEMO_CREDENTIALS[role].password)
     setErrorMessage('')
     setSuccessMessage(`Loaded ${roleConfig[role].badge} demo credentials`)
     setTimeout(() => setSuccessMessage(''), 3000)
@@ -100,8 +110,15 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
     setErrorMessage('')
     setSuccessMessage('')
 
-    if (!identifier.trim()) {
-      setErrorMessage('Please enter your email or hospital identifier.')
+    if (isLoading) return
+
+    const email = normalizeEmail(identifier)
+    if (!email) {
+      setErrorMessage('Please enter your email address.')
+      return
+    }
+    if (!isValidEmail(email)) {
+      setErrorMessage('Please enter a valid email address.')
       return
     }
 
@@ -109,25 +126,30 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
       setErrorMessage('Please enter your portal password.')
       return
     }
+    if (password.length > LIMITS.password.max) {
+      setErrorMessage('Incorrect email or password. Please try again.')
+      return
+    }
 
     setIsLoading(true)
 
     try {
       // The API authenticates by email/password alone; it doesn't know which
-      // tab the person picked. MRN-style identifiers aren't supported yet, so
-      // this only succeeds for an email + password pair.
-      const user = await login({ email: identifier.trim().toLowerCase(), password })
+      // tab the person picked.
+      const user = await login({ email, password })
 
       if (user.role !== selectedRole) {
         // Session cookie is already set for the real role; clear it so a
         // wrong-tab login doesn't leave them signed in under this tab.
         await logout().catch(() => {})
         setErrorMessage(
-          `This account is registered as a ${roleConfig[user.role]?.badge ?? user.role}. ` +
+          `This account is registered as a ${roleConfig[user.role]?.badge ?? 'different role'}. ` +
             `Switch tabs and sign in there.`
         )
         return
       }
+
+      setPassword('')
 
       setSuccessMessage(`Welcome back! Authenticated as ${roleConfig[selectedRole].badge}.`)
       if (onLoginSuccess) {
@@ -277,26 +299,28 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
                 </button>
               </div>
 
-              {/* One-Click Quick Demo Autofill Strip */}
-              <div className="login-portal__demo-strip">
-                <span className="login-portal__demo-caption">Quick Demo Fill:</span>
-                <div className="login-portal__demo-actions">
-                  <button
-                    type="button"
-                    className="login-portal__demo-pill"
-                    onClick={() => handleQuickDemoFill('patient')}
-                  >
-                    Patient
-                  </button>
-                  <button
-                    type="button"
-                    className="login-portal__demo-pill"
-                    onClick={() => handleQuickDemoFill('doctor')}
-                  >
-                    Doctor
-                  </button>
+              {/* One-Click Quick Demo Autofill Strip (development builds only) */}
+              {DEMO_CREDENTIALS && (
+                <div className="login-portal__demo-strip">
+                  <span className="login-portal__demo-caption">Quick Demo Fill:</span>
+                  <div className="login-portal__demo-actions">
+                    <button
+                      type="button"
+                      className="login-portal__demo-pill"
+                      onClick={() => handleQuickDemoFill('patient')}
+                    >
+                      Patient
+                    </button>
+                    <button
+                      type="button"
+                      className="login-portal__demo-pill"
+                      onClick={() => handleQuickDemoFill('doctor')}
+                    >
+                      Doctor
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Notifications / Alerts */}
               {errorMessage && (
@@ -327,7 +351,11 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
                     <input
                       id="portal-identifier"
                       name="identifier"
-                      type="text"
+                      type="email"
+                      inputMode="email"
+                      autoCapitalize="none"
+                      spellCheck={false}
+                      maxLength={LIMITS.email}
                       autoComplete="username"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
@@ -357,6 +385,7 @@ export default function Login({ onLoginSuccess, hideUtilityBar = false }) {
                       name="password"
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="current-password"
+                      maxLength={LIMITS.password.max}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••••••"

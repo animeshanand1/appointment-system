@@ -18,6 +18,7 @@ import {
   Info,
 } from 'lucide-react'
 import { bookAppointment, getDoctorSlots, listDoctors } from '../../lib/api'
+import { cleanText } from '../../lib/sanitize'
 import {
   DEPARTMENTS,
   FIELD_ORDER,
@@ -220,7 +221,7 @@ export default function BookAppointment({
       const result = await bookAppointment({
         doctorId: values.doctorId,
         startAt: values.slotStartAt,
-        patientNotes: values.reason.trim(),
+        patientNotes: cleanText(values.reason, { maxLength: REASON_MAX, multiline: true }),
       })
       setConfirmation(result)
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -719,6 +720,7 @@ export default function BookAppointment({
                 <textarea
                   id="book-reason"
                   rows={4}
+                  maxLength={REASON_MAX * 2}
                   placeholder="Briefly describe your symptoms or the purpose of this visit. Your doctor will see this."
                   className={inputClass('reason', 'book-appointment__textarea')}
                   value={values.reason}

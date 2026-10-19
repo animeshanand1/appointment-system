@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AlertCircle, ArrowLeft, ChevronLeft, ChevronRight, Clock, Info, Phone, RefreshCw } from 'lucide-react'
 import { listMyAppointments } from '../../lib/api'
 import { formatClock, formatLongDate } from '../BookAppointment/bookingHelpers'
+import { telHref } from '../../lib/sanitize'
 import { STATUS_LABELS, describeLoadError, pluralize, readableZone } from '../DoctorDashboard/doctorHelpers'
 // Shares the workspace look with the doctor dashboard.
 import '../DoctorDashboard/DoctorDashboard.css'
@@ -52,8 +53,8 @@ function AppointmentRow({ appointment, role, onViewDoctor }) {
           {isDoctor ? (
             <>
               <span className="doctor-dashboard__appt-name">{patient?.fullName ?? 'Unknown patient'}</span>
-              {patient?.phone && (
-                <a className="doctor-dashboard__appt-phone" href={`tel:${patient.phone}`}>
+              {telHref(patient?.phone) && (
+                <a className="doctor-dashboard__appt-phone" href={telHref(patient.phone)}>
                   <Phone size={13} aria-hidden="true" /> {patient.phone}
                 </a>
               )}
