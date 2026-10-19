@@ -3,7 +3,6 @@ import HeroSection from './HeroSection'
 import DepartmentsSection from './DepartmentsSection'
 import HowItWorksSection from './HowItWorksSection'
 import GallerySection from './GallerySection'
-import TestimonialsSection from './TestimonialsSection'
 import CtaSection from './CtaSection'
 import FooterSection from './FooterSection'
 import './LandingPage.css'
@@ -54,7 +53,6 @@ export default function LandingPage({ onOpenAuth, onOpenBooking, onOpenAbout, on
       <DepartmentsSection onBook={handleBook} onViewDepartment={onViewDepartment} />
       <HowItWorksSection onBook={handleBook} />
       <GallerySection />
-      <TestimonialsSection />
       <CtaSection onBook={handleBook} onOpenAuth={onOpenAuth} />
       <FooterSection
         onBook={handleBook}

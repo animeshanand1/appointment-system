@@ -1,0 +1,47 @@
+/* Privacy and terms pages: a plain reading column on the About page palette. */
+.legal {
+  min-height: 100%;
+  padding-bottom: 96px;
+}
+
+.legal__article {
+  max-width: 680px;
+  padding-top: clamp(32px, 6vw, 64px);
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.legal__title {
+  font-family: var(--au-serif);
+  font-weight: 400;
+  font-size: clamp(2rem, 4.4vw, 3rem);
+  letter-spacing: -0.025em;
+  color: var(--au-ink);
+}
+
+.legal__updated {
+  margin: 6px 0 20px;
+  font-size: 0.85rem;
+  color: var(--au-muted);
+}
+
+.legal__intro {
+  font-size: 1.1rem;
+  color: var(--au-ink);
+}
+
+.legal__article h2 {
+  margin: 2em 0 0.5em;
+  font-family: var(--au-serif);
+  font-weight: 500;
+  font-size: 1.35rem;
+  color: var(--au-ink);
+}
+
+.legal__article ul {
+  padding-left: 1.2em;
+}
+
+.legal__article li + li {
+  margin-top: 0.5em;
+}

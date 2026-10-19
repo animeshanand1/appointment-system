@@ -10,6 +10,7 @@ import {
   User,
   LogOut,
   Info,
+  Settings,
 } from 'lucide-react'
 import './Navbar.css'
 
@@ -20,11 +21,13 @@ export default function Navbar({
   onOpenAuth,
   onOpenBooking,
   onOpenDashboard,
+  onOpenAccount,
   onLogout,
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const isDoctor = currentUser?.role === 'doctor'
+  // Only guests and patients can book; doctors and admins can't.
+  const canBook = !currentUser || currentUser.role === 'patient'
 
   // Track window scroll for glassmorphism elevation
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function Navbar({
 
   const navItems = [
     { id: 'find-doctors', label: 'Find Doctors', icon: Stethoscope, badge: null },
-    { id: 'specialties', label: 'Specialties', icon: Sparkles, badge: '25+' },
+    { id: 'specialties', label: 'Specialties', icon: Sparkles, badge: '6' },
     { id: 'appointments', label: 'Appointments', icon: CalendarPlus, badge: 'Instant' },
     { id: 'about-us', label: 'About Us', icon: Info, badge: null },
   ]
@@ -114,11 +117,12 @@ export default function Navbar({
 
         {/* Right Action Controls */}
         <div className="app-navbar__actions">
-          {/* Primary Book Appointment CTA Button (patients and guests; doctors can't book) */}
-          {!isDoctor && (
+          {/* Primary Book Appointment CTA Button (patients and guests only) */}
+          {canBook && (
             <button
               type="button"
               className="app-navbar__cta-btn"
+              aria-label="Book an appointment"
               onClick={() => {
                 if (onOpenBooking) onOpenBooking()
                 else if (onOpenAuth) onOpenAuth()
@@ -160,11 +164,23 @@ export default function Navbar({
                   </span>
                 </span>
               </button>
+              {onOpenAccount && (
+                <button
+                  type="button"
+                  className="app-navbar__logout-btn"
+                  onClick={onOpenAccount}
+                  title="Account settings"
+                  aria-label="Account settings"
+                >
+                  <Settings size={16} />
+                </button>
+              )}
               <button
                 type="button"
                 className="app-navbar__logout-btn"
                 onClick={onLogout}
                 title="Sign Out"
+                aria-label="Sign out"
               >
                 <LogOut size={16} />
               </button>
@@ -239,7 +255,7 @@ export default function Navbar({
                 <span>Emergency Dispatch: 1-800-CARE-911</span>
               </a>
 
-              {!isDoctor && (
+              {canBook && (
                 <button
                   type="button"
                   className="app-navbar__mobile-cta"
@@ -286,6 +302,23 @@ export default function Navbar({
                           <User size={18} />
                         </span>
                         <span>My Dashboard</span>
+                      </div>
+                    </button>
+                  )}
+                  {onOpenAccount && (
+                    <button
+                      type="button"
+                      className="app-navbar__mobile-link"
+                      onClick={() => {
+                        setMobileMenuOpen(false)
+                        onOpenAccount()
+                      }}
+                    >
+                      <div className="app-navbar__mobile-link-left">
+                        <span className="app-navbar__mobile-icon-box">
+                          <Settings size={18} />
+                        </span>
+                        <span>Account settings</span>
                       </div>
                     </button>
                   )}

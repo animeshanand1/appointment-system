@@ -10,10 +10,15 @@ import AboutUs from './components/AboutUs/AboutUs'
 import DoctorDashboard from './components/DoctorDashboard/DoctorDashboard'
 import MyAppointments from './components/Appointments/MyAppointments'
 import DoctorProfile from './components/DoctorProfile/DoctorProfile'
+import PatientDashboard from './components/PatientDashboard/PatientDashboard'
+import AccountPage from './components/Account/AccountPage'
+import { ForgotPasswordPage, ResetPasswordPage } from './components/Account/PasswordRecovery'
+import AdminDashboard from './components/Admin/AdminDashboard'
+import LegalPage from './components/Legal/LegalPage'
 import { logout, me } from './lib/api'
 import { safeInternalPath } from './lib/sanitize'
 import { browserTimeZone } from './components/DoctorDashboard/doctorHelpers'
-import { ArrowLeft, ShieldCheck } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import './App.css'
 
 // Reads :doctorId from the URL.
@@ -66,8 +71,18 @@ function App() {
 
   const handleLoginSuccess = (userData) => {
     setCurrentUser(userData)
-    navigate(returnToBooking ? '/book' : '/dashboard')
+    navigate(userData.role === 'admin' ? '/admin' : returnToBooking ? '/book' : '/dashboard')
     setReturnToBooking(false)
+  }
+
+  // Profile edits and password changes return the fresh user record.
+  const handleUserUpdated = (user) => {
+    setCurrentUser({ role: user.role, identifier: user.email, user })
+  }
+
+  const go = (path) => () => {
+    navigate(path)
+    scrollTop()
   }
 
   // Re-reads the account after the doctor changes something the session
@@ -183,10 +198,8 @@ function App() {
         onSelectTab={handleSelectTab}
         onOpenAuth={handleOpenAuth}
         onOpenBooking={() => handleOpenBooking()}
-        onOpenDashboard={() => {
-          navigate('/dashboard')
-          scrollTop()
-        }}
+        onOpenDashboard={go(currentUser?.role === 'admin' ? '/admin' : '/dashboard')}
+        onOpenAccount={currentUser ? go('/account') : undefined}
         onLogout={handleLogout}
       />
 
@@ -278,13 +291,14 @@ function App() {
                       <ArrowLeft size={16} />
                       <span>Return to Hospital Homepage</span>
                     </button>
-                    <span className="app-auth-portal-tag">
-                      <ShieldCheck size={14} /> 256-Bit Encrypted Health Portal
-                    </span>
                   </div>
                 </div>
 
-                <Login onLoginSuccess={handleLoginSuccess} hideUtilityBar={true} />
+                <Login
+                  onLoginSuccess={handleLoginSuccess}
+                  onForgotPassword={go('/forgot-password')}
+                  hideUtilityBar={true}
+                />
               </div>
             )
           }
@@ -301,51 +315,17 @@ function App() {
                 onSessionRefresh={handleSessionRefresh}
                 onViewAppointments={() => navigate('/dashboard/appointments')}
               />
+            ) : currentUser.role === 'admin' ? (
+              <Navigate to="/admin" replace />
             ) : (
-              <div className="app-portal-preview">
-                <main className="app-portal-preview__main">
-                  <div className="app-portal-preview__card">
-                    <div className="app-portal-preview__icon">✓</div>
-                    <h2 className="app-portal-preview__heading">Authentication Verified</h2>
-                    <p className="app-portal-preview__desc">
-                      Logged in as <strong>{currentUser.identifier}</strong> with{' '}
-                      <strong>{currentUser.role}</strong> privileges.
-                    </p>
-                    <div className="app-portal-preview__action-box">
-                      <p className="app-portal-preview__notice">
-                        Active Section: <strong>{activeTab.toUpperCase()}</strong>. Doctor slot booking and OPD
-                        management ready.
-                      </p>
-                      <div className="app-portal-preview__actions-row">
-                        <button
-                          type="button"
-                          className="app-portal-preview__back-btn"
-                          onClick={() => handleOpenBooking()}
-                        >
-                          Book an Appointment
-                        </button>
-                        <button
-                          type="button"
-                          className="app-portal-preview__back-btn"
-                          onClick={() => navigate('/dashboard/appointments')}
-                        >
-                          My Appointments
-                        </button>
-                        <button type="button" className="app-portal-preview__back-btn" onClick={goHome}>
-                          View Hospital Landing Page
-                        </button>
-                        <button
-                          type="button"
-                          className="app-portal-preview__logout-inline-btn"
-                          onClick={handleLogout}
-                        >
-                          Sign Out
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </main>
-              </div>
+              <PatientDashboard
+                currentUser={currentUser}
+                onBook={() => handleOpenBooking()}
+                onBookDoctor={handleBookDoctor}
+                onViewAll={go('/dashboard/appointments')}
+                onViewDoctor={(doctorId) => handleViewDoctor(doctorId, null, '/dashboard')}
+                onAccount={go('/account')}
+              />
             )
           }
         />
@@ -356,6 +336,7 @@ function App() {
             currentUser ? (
               <MyAppointments
                 role={currentUser.role}
+                selfId={currentUser.user?.id}
                 timezone={currentUser.role === 'doctor' ? currentUser.user?.timezone ?? browserTimeZone() : undefined}
                 onBack={() => navigate('/dashboard')}
                 onBook={() => handleOpenBooking()}
@@ -366,6 +347,48 @@ function App() {
             )
           }
         />
+
+        <Route
+          path="/account"
+          element={
+            currentUser ? (
+              <AccountPage
+                currentUser={currentUser}
+                onUserUpdated={handleUserUpdated}
+                onBack={go(currentUser.role === 'admin' ? '/admin' : '/dashboard')}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            !currentUser ? (
+              <Navigate to="/login" replace />
+            ) : currentUser.role === 'admin' ? (
+              <AdminDashboard currentUser={currentUser} />
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
+
+        <Route
+          path="/forgot-password"
+          element={currentUser ? <Navigate to="/account" replace /> : <ForgotPasswordPage onBack={go('/login')} />}
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <ResetPasswordPage onBack={go('/login')} onForgot={go('/forgot-password')} onReset={() => setCurrentUser(null)} />
+          }
+        />
+
+        <Route path="/privacy" element={<LegalPage kind="privacy" onBack={goHome} />} />
+        <Route path="/terms" element={<LegalPage kind="terms" onBack={goHome} />} />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

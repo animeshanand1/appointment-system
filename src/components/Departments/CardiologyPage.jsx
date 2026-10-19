@@ -6,7 +6,6 @@ import {
   Stethoscope,
   ShieldCheck,
   UserCheck,
-  Star,
   CheckCircle2,
   Zap,
   Waves,
@@ -34,11 +33,12 @@ export default function CardiologyPage({ onBack, onBookClick, onViewDoctor }) {
     }
   }, [])
 
+  // Only facts the app itself knows; no marketing numbers.
   const stats = [
-    { label: 'Senior Cardiologists', value: '28' },
-    { label: 'Avg. OPD Wait Time', value: '10 mins' },
-    { label: 'Cardiac Procedures / Year', value: '3,200+' },
-    { label: 'Patient Satisfaction', value: '98.6%' },
+    { label: 'Cardiologists to choose from', value: liveDoctors.length > 0 ? String(liveDoctors.length) : '3' },
+    { label: 'Outpatient clinic days', value: 'Mon–Sat' },
+    { label: 'Clinic hours', value: '8 am – 8 pm' },
+    { label: 'Emergency unit', value: '24/7' },
   ]
 
   const treatments = [
@@ -79,30 +79,24 @@ export default function CardiologyPage({ onBack, onBookClick, onViewDoctor }) {
       name: 'Dr. Sarah Jenkins, MD',
       title: 'Head of Clinical Cardiology',
       experience: '18 yrs experience',
-      rating: '4.9',
-      reviews: '420+ Reviews',
     },
     {
       name: 'Dr. Daniel Chen, MD',
       title: 'Interventional Cardiologist',
       experience: '14 yrs experience',
-      rating: '4.8',
-      reviews: '310+ Reviews',
     },
     {
       name: 'Dr. Michael Ortiz, MD',
       title: 'Cardiac Electrophysiologist',
       experience: '11 yrs experience',
-      rating: '4.9',
-      reviews: '265+ Reviews',
     },
   ]
 
   const trustPoints = [
-    'NABH & JCI Accredited Cardiac Cath Lab',
-    '24/7 Emergency Cardiac Response Team',
-    'Board-Certified Interventional Specialists',
-    'Insurance & Cashless Claim Support',
+    'ECG and echo on the same floor as the clinic',
+    'Emergency unit open 24/7, no appointment needed',
+    'Book the cardiologist you want, by name',
+    'Move or cancel online any time before your visit',
   ]
 
   return (
@@ -232,9 +226,6 @@ export default function CardiologyPage({ onBack, onBookClick, onViewDoctor }) {
                     <div className="cardiology-page__doctor-meta">
                       <span className="cardiology-page__doctor-experience">
                         <UserCheck size={13} /> {doc.experience}
-                      </span>
-                      <span className="cardiology-page__doctor-rating">
-                        <Star size={13} /> {doc.rating} ({doc.reviews})
                       </span>
                     </div>
                     <button

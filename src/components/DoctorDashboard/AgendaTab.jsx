@@ -14,6 +14,8 @@ import {
 import { listMyAppointments, updateAppointmentStatus } from '../../lib/api'
 import { formatClock, formatLongDate } from '../BookAppointment/bookingHelpers'
 import { telHref } from '../../lib/sanitize'
+import RescheduleControls from '../Appointments/RescheduleControls'
+import '../Appointments/Appointments.css'
 import {
   ACTION_LABELS,
   ACTION_STATUS,
@@ -32,7 +34,7 @@ const POLL_MS = 60 * 1000
 const COUNT_KEYS = ['booked', 'completed', 'cancelled', 'no_show']
 const ACTION_ORDER = ['complete', 'no_show', 'cancel']
 
-function AppointmentItem({ appointment, isNext, showDate, pending, error, onAct }) {
+function AppointmentItem({ appointment, isNext, showDate, pending, error, onAct, doctorId, onChanged }) {
   const [cancelling, setCancelling] = useState(false)
   const [reason, setReason] = useState('')
   const trimmed = reason.trim()
@@ -163,6 +165,10 @@ function AppointmentItem({ appointment, isNext, showDate, pending, error, onAct 
         </div>
       )}
 
+      {appointment.status === 'booked' && !cancelling && (
+        <RescheduleControls appointment={appointment} role="doctor" doctorId={doctorId} onChanged={onChanged} />
+      )}
+
       {error && (
         <p className="doctor-dashboard__inline-error" role="alert">
           <AlertCircle size={14} aria-hidden="true" /> {error}
@@ -172,7 +178,7 @@ function AppointmentItem({ appointment, isNext, showDate, pending, error, onAct 
   )
 }
 
-export default function AgendaTab({ date, onDateChange, timezone }) {
+export default function AgendaTab({ date, onDateChange, timezone, doctorId }) {
   const [view, setView] = useState('day') // 'day' | 'outcome'
   const [result, setResult] = useState({ key: null, status: 'loading', appointments: [], meta: null, outcomeCount: 0, fetchedAt: 0 })
   const [pendingId, setPendingId] = useState(null)
@@ -254,6 +260,14 @@ export default function AgendaTab({ date, onDateChange, timezone }) {
     }
   }
 
+  const handleChanged = (updated, message) => {
+    if (updated) {
+      setResult((prev) => ({ ...prev, appointments: prev.appointments.map((a) => (a.id === updated.id ? updated : a)) }))
+    }
+    setNotice(message ?? '')
+    load()
+  }
+
   const goToDate = (next) => {
     setView('day')
     setNotice('')
@@ -310,6 +324,8 @@ export default function AgendaTab({ date, onDateChange, timezone }) {
             pending={pendingId === appointment.id}
             error={itemError?.id === appointment.id ? itemError.message : null}
             onAct={act}
+            doctorId={doctorId}
+            onChanged={handleChanged}
           />
         ))}
       </ul>

@@ -3,6 +3,8 @@ import { AlertCircle, ArrowLeft, ChevronLeft, ChevronRight, Clock, Info, Phone, 
 import { listMyAppointments } from '../../lib/api'
 import { formatClock, formatLongDate } from '../BookAppointment/bookingHelpers'
 import { telHref } from '../../lib/sanitize'
+import RescheduleControls from './RescheduleControls'
+import './Appointments.css'
 import { STATUS_LABELS, describeLoadError, pluralize, readableZone } from '../DoctorDashboard/doctorHelpers'
 // Shares the workspace look with the doctor dashboard.
 import '../DoctorDashboard/DoctorDashboard.css'
@@ -28,7 +30,7 @@ function groupByDate(appointments) {
   return groups
 }
 
-function AppointmentRow({ appointment, role, onViewDoctor }) {
+export function AppointmentRow({ appointment, role, selfId, onViewDoctor, onChanged }) {
   const { patient, doctor } = appointment
   const isDoctor = role === 'doctor'
   const doctorDetail = doctor ? [doctor.specialization, doctor.clinicName].filter(Boolean).join(' · ') : ''
@@ -78,6 +80,16 @@ function AppointmentRow({ appointment, role, onViewDoctor }) {
         )}
       </div>
 
+      {onChanged && appointment.status === 'booked' && (
+        <RescheduleControls
+          appointment={appointment}
+          role={role}
+          doctorId={isDoctor ? selfId : doctor?.id}
+          includeCancel
+          onChanged={onChanged}
+        />
+      )}
+
       {!isDoctor && doctor?.id && onViewDoctor && (
         <div className="doctor-dashboard__appt-actions">
           <button
@@ -94,21 +106,23 @@ function AppointmentRow({ appointment, role, onViewDoctor }) {
 }
 
 /**
- * Read-only list of the signed-in user's appointments: patients see the
- * doctors they booked, doctors see their patients. Status changes stay on the
- * doctor dashboard's Agenda tab.
+ * The signed-in user's appointments: patients see the doctors they booked,
+ * doctors see their patients. Both can cancel and reschedule from here;
+ * completed / no-show outcomes stay on the doctor dashboard's Agenda tab.
  * @param role "doctor" | "patient"
  * @param timezone doctor's clinic time zone, shown so the times are unambiguous
  *   (patients see each appointment's own zone instead)
  * @param onBack () => void
  * @param onBook () => void: patient's shortcut when there is nothing to show
  * @param onViewDoctor (doctorId) => void
+ * @param selfId the signed-in doctor's id (their own calendar for moves)
  */
-export default function MyAppointments({ role, timezone, onBack, onBook, onViewDoctor }) {
+export default function MyAppointments({ role, timezone, selfId, onBack, onBook, onViewDoctor }) {
   const [scope, setScope] = useState('upcoming')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
   const [result, setResult] = useState({ key: null, status: 'loading', appointments: [], meta: null, error: null })
+  const [notice, setNotice] = useState('')
   const latest = useRef(0)
 
   // A result only counts for the request that produced it, so changing a
@@ -143,6 +157,15 @@ export default function MyAppointments({ role, timezone, onBack, onBook, onViewD
   const changeStatus = (next) => {
     setStatus(next)
     setPage(1)
+  }
+
+  // Show the server's copy straight away, then refetch so filters stay right.
+  const handleChanged = (updated, message) => {
+    if (updated) {
+      setResult((prev) => ({ ...prev, appointments: prev.appointments.map((a) => (a.id === updated.id ? updated : a)) }))
+    }
+    setNotice(message ?? '')
+    load()
   }
 
   const total = result.meta?.total ?? 0
@@ -189,7 +212,14 @@ export default function MyAppointments({ role, timezone, onBack, onBook, onViewD
         <h3 className="doctor-dashboard__section-title">{formatLongDate(group.date)}</h3>
         <ul className="doctor-dashboard__list">
           {group.items.map((appointment) => (
-            <AppointmentRow key={appointment.id} appointment={appointment} role={role} onViewDoctor={onViewDoctor} />
+            <AppointmentRow
+              key={appointment.id}
+              appointment={appointment}
+              role={role}
+              selfId={selfId}
+              onViewDoctor={onViewDoctor}
+              onChanged={handleChanged}
+            />
           ))}
         </ul>
       </div>
@@ -256,6 +286,11 @@ export default function MyAppointments({ role, timezone, onBack, onBook, onViewD
               </button>
             </div>
           </div>
+
+          <p className="doctor-dashboard__visually-hidden" role="status" aria-live="polite">
+            {notice}
+          </p>
+          {notice && <p className="doctor-dashboard__notice" aria-hidden="true">{notice}</p>}
 
           {renderList()}
 

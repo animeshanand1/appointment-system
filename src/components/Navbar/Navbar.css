@@ -575,4 +575,20 @@ button.app-navbar__user-chip:not(:disabled):hover .app-navbar__user-name {
     padding: 8px 14px;
     font-size: 0.78125rem;
   }
+
+  /* Signed in, the profile chip and its buttons don't fit next to the logo;
+     the hamburger menu has dashboard, settings and sign out instead. */
+  .app-navbar__user-profile {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-navbar__cta-btn span:not(.app-navbar__cta-glow) {
+    display: none;
+  }
+
+  .app-navbar__cta-btn {
+    padding: 8px 10px;
+  }
 }
