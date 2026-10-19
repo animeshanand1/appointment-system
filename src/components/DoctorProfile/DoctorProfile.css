@@ -1,0 +1,461 @@
+/* ==========================================================================
+   CarePulse Hospital - Doctor Profile (BEM Methodology)
+   Public, patient-facing view of one doctor. Uses the global tokens from
+   index.css, same as the booking page.
+   ========================================================================== */
+
+.doctor-profile {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-body);
+}
+
+.doctor-profile__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Back bar */
+.doctor-profile__back-bar {
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 10px 24px;
+}
+
+.doctor-profile__back-bar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.doctor-profile__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.doctor-profile__back-btn:hover {
+  background-color: var(--color-primary-100);
+  transform: translateX(-2px);
+}
+
+.doctor-profile__main {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Hero */
+.doctor-profile__hero {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 28px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.doctor-profile__avatar {
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--color-primary-gradient);
+  color: var(--color-text-inverse);
+  font-size: 1.9rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-glow);
+}
+
+.doctor-profile__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.doctor-profile__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  color: var(--color-primary-600);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+}
+
+.doctor-profile__name {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-text-main);
+  overflow-wrap: anywhere;
+}
+
+.doctor-profile__quals {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+}
+
+.doctor-profile__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.doctor-profile__pill::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-full);
+  background-color: currentColor;
+}
+
+.doctor-profile__pill--on {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+  border: 1px solid var(--color-success-border);
+}
+
+.doctor-profile__pill--off {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border: 1px solid var(--color-warning);
+}
+
+.doctor-profile__cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.doctor-profile__cta-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+/* Buttons */
+.doctor-profile__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  font-weight: 700;
+  transition: background-color var(--transition-fast), transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.doctor-profile__btn--primary {
+  background: var(--color-primary-gradient);
+  color: var(--color-text-inverse);
+  box-shadow: var(--shadow-glow);
+}
+
+.doctor-profile__btn--primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.doctor-profile__btn--primary:disabled {
+  background: var(--color-bg-alt);
+  color: var(--color-text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.doctor-profile__btn--ghost {
+  padding: 8px 14px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-medium);
+  color: var(--color-text-main);
+}
+
+.doctor-profile__btn--ghost:hover {
+  background-color: var(--color-bg-subtle);
+}
+
+.doctor-profile__btn:focus-visible,
+.doctor-profile__back-btn:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Quick facts */
+.doctor-profile__facts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.doctor-profile__fact {
+  padding: 16px 20px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+}
+
+.doctor-profile__fact dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.doctor-profile__fact dd {
+  margin-top: 6px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+/* Content */
+.doctor-profile__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.doctor-profile__column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.doctor-profile__card {
+  padding: 24px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.doctor-profile__section-title {
+  margin-bottom: 14px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.doctor-profile__bio {
+  line-height: 1.7;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.doctor-profile__empty {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.doctor-profile__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+
+.doctor-profile__chip {
+  padding: 6px 14px;
+  background-color: var(--color-teal-50);
+  border: 1px solid var(--color-teal-100);
+  color: var(--color-teal-600);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.doctor-profile__clinic {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--color-primary-600);
+}
+
+.doctor-profile__clinic svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.doctor-profile__clinic > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--color-text-body);
+}
+
+.doctor-profile__clinic strong {
+  color: var(--color-text-main);
+}
+
+.doctor-profile__address {
+  overflow-wrap: anywhere;
+}
+
+/* Weekly hours */
+.doctor-profile__hours-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.doctor-profile__hours-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: 0.9rem;
+}
+
+.doctor-profile__hours-row:last-child {
+  border-bottom: 0;
+}
+
+.doctor-profile__hours-day {
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+.doctor-profile__hours-times {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.doctor-profile__hours-off {
+  color: var(--color-text-muted);
+}
+
+.doctor-profile__note {
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.doctor-profile__hours-list + .doctor-profile__note {
+  margin-top: 16px;
+}
+
+/* Loading and error states */
+.doctor-profile__skeleton {
+  height: 180px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(90deg, var(--color-bg-subtle), var(--color-bg-alt), var(--color-bg-subtle));
+  background-size: 200% 100%;
+  animation: doctor-profile-shimmer 1.4s linear infinite;
+}
+
+.doctor-profile__skeleton--hero {
+  height: 140px;
+}
+
+@keyframes doctor-profile-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.doctor-profile__message {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+}
+
+.doctor-profile__message--error {
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .doctor-profile__skeleton {
+    animation: none;
+  }
+
+  .doctor-profile__back-btn:hover,
+  .doctor-profile__btn--primary:hover:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .doctor-profile__layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .doctor-profile__main {
+    padding: 24px 16px 48px;
+  }
+
+  .doctor-profile__hero {
+    grid-template-columns: 1fr;
+    justify-items: start;
+    padding: 20px;
+  }
+
+  .doctor-profile__cta {
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .doctor-profile__name {
+    font-size: 1.6rem;
+  }
+
+  .doctor-profile__facts {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,455 @@
+/* ==========================================================================
+   CarePulse Hospital - Signup Component Styles (BEM Methodology)
+   Theme: Light Mode Healthcare / Clinical
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Root Component Block: .signup-card
+   -------------------------------------------------------------------------- */
+.signup-card {
+  width: 100%;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-xl);
+  padding: 36px 40px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* --------------------------------------------------------------------------
+   Element: Header & Top Actions
+   -------------------------------------------------------------------------- */
+.signup-card__header {
+  margin-bottom: 20px;
+}
+
+.signup-card__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.signup-card__flip-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.signup-card__flip-back-btn:hover {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-700);
+  transform: translateX(-2px);
+}
+
+.signup-card__security-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-teal-600);
+  background-color: var(--color-teal-50);
+  border: 1px solid var(--color-teal-100);
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+}
+
+.signup-card__brand-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.signup-card__brand-icon {
+  color: var(--color-primary-500);
+}
+
+.signup-card__brand-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.signup-card__title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--color-text-main);
+  margin-bottom: 6px;
+}
+
+.signup-card__subtitle {
+  font-size: 0.84rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Element: Role Selection Tabs
+   -------------------------------------------------------------------------- */
+.signup-card__role-switcher {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background-color: var(--color-bg-subtle);
+  border: 1px solid var(--color-border-light);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  margin-bottom: 16px;
+  gap: 4px;
+}
+
+.signup-card__role-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.signup-card__role-btn:hover {
+  color: var(--color-text-main);
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.signup-card__role-btn--active {
+  background-color: #ffffff;
+  color: var(--color-primary-600);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(2, 132, 199, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Element: Quick Autofill Demo Helper Strip
+   -------------------------------------------------------------------------- */
+.signup-card__demo-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  margin-bottom: 18px;
+}
+
+.signup-card__demo-caption {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.signup-card__demo-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.signup-card__demo-pill {
+  padding: 2px 9px;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-full);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--color-primary-700);
+  transition: all var(--transition-fast);
+}
+
+.signup-card__demo-pill:hover {
+  background-color: var(--color-primary-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-600);
+}
+
+/* --------------------------------------------------------------------------
+   Element: Alerts
+   -------------------------------------------------------------------------- */
+.signup-card__alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  animation: fadeIn 200ms ease;
+}
+
+.signup-card__alert--error {
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+
+.signup-card__alert--success {
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+.signup-card__alert-icon {
+  flex-shrink: 0;
+}
+
+.signup-card__alert-text {
+  flex: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Element: Form & Inputs
+   -------------------------------------------------------------------------- */
+.signup-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.signup-card__grid-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.signup-card__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signup-card__label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  letter-spacing: -0.01em;
+}
+
+.signup-card__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1.5px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.signup-card__input-wrapper:focus-within {
+  border-color: var(--color-primary-500);
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.signup-card__input-adornment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 12px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.signup-card__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-main);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.signup-card__input::placeholder {
+  color: #94a3b8;
+  font-size: 0.8125rem;
+}
+
+.signup-card__visibility-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 12px;
+  color: var(--color-text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.signup-card__visibility-toggle:hover {
+  color: var(--color-text-main);
+}
+
+/* Doctor Section Container */
+.signup-card__doctor-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  background-color: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  border-radius: var(--radius-md);
+  animation: fadeIn 200ms ease;
+}
+
+/* --------------------------------------------------------------------------
+   Element: Terms & Consent
+   -------------------------------------------------------------------------- */
+.signup-card__terms-row {
+  margin-top: 4px;
+}
+
+.signup-card__checkbox-label {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.78125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.signup-card__checkbox {
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary-500);
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+}
+
+.signup-card__checkbox-text {
+  flex: 1;
+}
+
+.signup-card__link {
+  color: var(--color-primary-600);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.signup-card__link:hover {
+  color: var(--color-primary-700);
+}
+
+/* --------------------------------------------------------------------------
+   Element: Submit Action Button
+   -------------------------------------------------------------------------- */
+.signup-card__submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--color-primary-gradient);
+  color: #ffffff;
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+  margin-top: 6px;
+}
+
+.signup-card__submit-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.42);
+  filter: brightness(1.03);
+}
+
+.signup-card__submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.signup-card__submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.signup-card__btn-arrow {
+  transition: transform var(--transition-fast);
+}
+
+.signup-card__submit-btn:hover .signup-card__btn-arrow {
+  transform: translateX(4px);
+}
+
+.signup-card__spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: var(--radius-full);
+  animation: spin 0.75s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+   Element: Footer Switch Link
+   -------------------------------------------------------------------------- */
+.signup-card__footer {
+  margin-top: 20px;
+  text-align: center;
+  border-top: 1px solid var(--color-border-light);
+  padding-top: 16px;
+}
+
+.signup-card__footer-prompt {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.signup-card__flip-link {
+  color: var(--color-primary-600);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 4px;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color var(--transition-fast);
+}
+
+.signup-card__flip-link:hover {
+  color: var(--color-primary-700);
+}
+
+/* --------------------------------------------------------------------------
+   Responsive Breakpoints
+   -------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .signup-card {
+    padding: 24px 18px;
+    border-radius: var(--radius-lg);
+  }
+
+  .signup-card__grid-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .signup-card__title {
+    font-size: 1.35rem;
+  }
+
+  .signup-card__role-btn {
+    padding: 8px 6px;
+    font-size: 0.75rem;
+  }
+}

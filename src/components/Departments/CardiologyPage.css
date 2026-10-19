@@ -1,0 +1,456 @@
+/* ==========================================================================
+   Cardiology & Heart Center - Department Detail Page (BEM Methodology)
+   Theme: Light Mode Healthcare / Modern HealthTech
+   ========================================================================== */
+
+.cardiology-page {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-page);
+  color: var(--color-text-body);
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Back Navigation Bar
+   ========================================================================== */
+.cardiology-page__back-bar {
+  background-color: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border-light);
+  padding: 10px 24px;
+}
+
+.cardiology-page__back-bar-container {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.cardiology-page__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--color-primary-600);
+  background-color: var(--color-primary-50);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.cardiology-page__back-btn:hover {
+  background-color: var(--color-primary-100);
+  transform: translateX(-2px);
+}
+
+/* ==========================================================================
+   Hero Header
+   ========================================================================== */
+.cardiology-page__hero {
+  position: relative;
+  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 70%, #f8fafc 100%);
+  padding: 56px 24px 0;
+}
+
+.cardiology-page__hero-container {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-bottom: 48px;
+}
+
+.cardiology-page__hero-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background-color: #fef2f2;
+  color: #ef4444;
+  margin-bottom: 16px;
+}
+
+.cardiology-page__hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background-color: var(--color-primary-50);
+  border: 1px solid var(--color-primary-200);
+  color: var(--color-primary-600);
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  margin-bottom: 16px;
+}
+
+.cardiology-page__hero-title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-text-main);
+  margin-bottom: 14px;
+}
+
+.cardiology-page__hero-desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+  margin-bottom: 28px;
+  max-width: 620px;
+}
+
+.cardiology-page__hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: var(--color-primary-gradient);
+  color: var(--color-text-inverse);
+  font-size: 0.92rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-glow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cardiology-page__hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+}
+
+/* Stats Strip */
+.cardiology-page__stats-bar {
+  background-color: var(--color-bg-surface);
+  border-top: 1px solid var(--color-border-light);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.cardiology-page__stats-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 28px 24px;
+}
+
+.cardiology-page__stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.cardiology-page__stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.cardiology-page__stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   Shared Section Layout
+   ========================================================================== */
+.cardiology-page__section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.cardiology-page__section-header {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 40px;
+}
+
+.cardiology-page__section-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  margin-bottom: 10px;
+}
+
+.cardiology-page__section-subtitle {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Treatments & Procedures
+   ========================================================================== */
+.cardiology-page__treatments-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.cardiology-page__treatment-card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.cardiology-page__treatment-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.cardiology-page__treatment-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  background-color: #fef2f2;
+  color: #ef4444;
+  margin-bottom: 14px;
+}
+
+.cardiology-page__treatment-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 8px;
+}
+
+.cardiology-page__treatment-desc {
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+/* ==========================================================================
+   Featured Specialists
+   ========================================================================== */
+.cardiology-page__doctors {
+  background-color: var(--color-bg-subtle);
+}
+
+.cardiology-page__doctors-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.cardiology-page__doctor-card {
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.cardiology-page__doctor-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-600);
+  margin-bottom: 14px;
+}
+
+.cardiology-page__doctor-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+  margin-bottom: 4px;
+}
+
+.cardiology-page__doctor-title {
+  font-size: 0.84rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 14px;
+}
+
+.cardiology-page__doctor-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 18px;
+}
+
+.cardiology-page__doctor-experience,
+.cardiology-page__doctor-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cardiology-page__doctor-book-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: 1px solid var(--color-primary-200);
+  color: var(--color-primary-600);
+  font-size: 0.84rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: background-color var(--transition-fast);
+}
+
+.cardiology-page__doctor-book-btn:hover {
+  background-color: var(--color-primary-50);
+}
+
+.cardiology-page__doctor-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardiology-page__doctor-book-btn--solid {
+  background-color: var(--color-primary-600);
+  border-color: var(--color-primary-600);
+  color: var(--color-text-inverse);
+}
+
+.cardiology-page__doctor-book-btn--solid:hover {
+  background-color: var(--color-primary-700);
+}
+
+/* ==========================================================================
+   Why Choose Us / Trust Strip
+   ========================================================================== */
+.cardiology-page__trust-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.cardiology-page__trust-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 20px;
+  background-color: var(--color-bg-surface);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.cardiology-page__trust-icon {
+  flex-shrink: 0;
+  color: var(--color-success);
+}
+
+/* ==========================================================================
+   Bottom CTA Banner
+   ========================================================================== */
+.cardiology-page__cta {
+  padding: 0 24px 64px;
+}
+
+.cardiology-page__cta-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--color-primary-gradient);
+  border-radius: var(--radius-xl);
+  padding: 32px 40px;
+  box-shadow: var(--shadow-glow);
+}
+
+.cardiology-page__cta-icon {
+  flex-shrink: 0;
+  color: var(--color-text-inverse);
+}
+
+.cardiology-page__cta-copy {
+  flex: 1;
+}
+
+.cardiology-page__cta-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-text-inverse);
+  margin-bottom: 4px;
+}
+
+.cardiology-page__cta-desc {
+  font-size: 0.88rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.cardiology-page__cta-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 24px;
+  background-color: var(--color-text-inverse);
+  color: var(--color-primary-600);
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-fast);
+}
+
+.cardiology-page__cta-btn:hover {
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Responsive Breakpoints
+   ========================================================================== */
+@media (max-width: 900px) {
+  .cardiology-page__treatments-grid,
+  .cardiology-page__doctors-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .cardiology-page__stats-container {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 20px;
+  }
+
+  .cardiology-page__cta-container {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 640px) {
+  .cardiology-page__hero-title {
+    font-size: 1.8rem;
+  }
+
+  .cardiology-page__treatments-grid,
+  .cardiology-page__doctors-grid,
+  .cardiology-page__trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardiology-page__cta-container {
+    padding: 24px;
+  }
+}
